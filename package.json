@@ -1,0 +1,15 @@
+{
+  "name": "rinha-js",
+  "module": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/server.js",
+    "start": "bun src/server.js"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "dependencies": {
+    "postgresjs": "^1.1.2"
+  }
+}
