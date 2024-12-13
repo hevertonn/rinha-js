@@ -10,6 +10,6 @@
     "@types/bun": "latest"
   },
   "dependencies": {
-    "postgresjs": "^1.1.2"
+    "postgres": "^3.4.5"
   }
 }

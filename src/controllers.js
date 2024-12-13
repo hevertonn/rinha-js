@@ -4,11 +4,11 @@ import { validateBody, validateSearchParam } from "./middleware"
 async function postPerson(req) {
   const body = await req.json()
 
-  const result = validateBody(body)
+  const result = await validateBody(body)
   if (result) return result
 
   const person = await sql`
-     INSERT INTO people(id, apelido, nome, nascimento, stack)
+     INSERT INTO pessoas(id, apelido, nome, nascimento, stack)
      VALUES (${crypto.randomUUID()}, ${body.apelido}, ${body.nome}, ${body.nascimento}, ${body.stack})
      returning id
     `
@@ -25,7 +25,7 @@ async function getPersonById(url) {
   const id = url.href.replace(url.origin + '/pessoas/', '');
 
   const person = await sql`
-      SELECT * FROM people
+      SELECT id, apelido, nome, nascimento, stack FROM pessoas
       WHERE id = ${id};
     `
 
@@ -33,25 +33,25 @@ async function getPersonById(url) {
 }
 
 async function getPersonByQuery(url) {
-  let searchTerm = url.href.replace(url.origin + '/pessoas', '')
+  let searchTerm = url.href.replace(url.origin + '/pessoas?', '')
 
   const result = validateSearchParam(searchTerm)
   if (result) return result
 
-  searchTerm = searchTerm.replace('?t=', '')
+  searchTerm = searchTerm.replace('t=', '')
 
   const people = await sql`
-    SELECT (id, nickname, name, birth_date, stack) FROM people
-    WHERE search_person LIKE ${searchTerm}
+    SELECT id, apelido, nome, nascimento, stack FROM pessoas
+    WHERE apelido_nome_stack ILIKE ${'%' + searchTerm + '%'}
     LIMIT 50;
   `
 
-  return new Response(people)
+  return Response.json(people)
 }
 
 async function personCount() {
   const count = await sql`
-    SELECT COUNT(id) FROM people;
+    SELECT COUNT(id) FROM pessoas;
   `
 
   return new Response(count[0].count)
