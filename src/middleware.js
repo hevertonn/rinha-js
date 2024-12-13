@@ -16,9 +16,15 @@ function validateStack(stack) {
   } else return stack != null
 }
 
+function validateDateFormat(date) {
+  const dateArray = date.split('-')
+  if (dateArray[0].length != 4) return true
+}
+
 async function validateBody(body) {
-  if (!body.apelido || !body.nome || body.apelido.length > 32 || body.nome.length > 100 ||
-    Number.isNaN(Date.parse(body.nascimento)) || body.nascimento.length > 10)
+  if (!body.apelido || !body.nome || body.apelido.length > 32 ||
+    body.nome.length > 100 || Number.isNaN(Date.parse(body.nascimento)) ||
+    validateDateFormat(body.nascimento))
     return new Response(null, { status: 422 })
 
   if (typeof (body.apelido) != 'string' || typeof (body.nome) != 'string' ||
@@ -37,4 +43,3 @@ export {
   validateBody,
   validateSearchParam
 }
-

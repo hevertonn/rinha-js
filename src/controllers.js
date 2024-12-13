@@ -28,6 +28,7 @@ async function getPersonById(url) {
       SELECT id, apelido, nome, nascimento, stack FROM pessoas
       WHERE id = ${id};
     `
+  if (!person[0]) return new Response(null, { status: 404 })
 
   return Response.json(person[0])
 }
@@ -38,11 +39,11 @@ async function getPersonByQuery(url) {
   const result = validateSearchParam(searchTerm)
   if (result) return result
 
-  searchTerm = searchTerm.replace('t=', '')
+  searchTerm = searchTerm.replace('t=', '').toLowerCase()
 
   const people = await sql`
     SELECT id, apelido, nome, nascimento, stack FROM pessoas
-    WHERE apelido_nome_stack ILIKE ${'%' + searchTerm + '%'}
+    WHERE apelido_nome_stack LIKE ${'%' + searchTerm + '%'}
     LIMIT 50;
   `
 
