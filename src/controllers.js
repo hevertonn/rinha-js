@@ -4,19 +4,19 @@ import { validateBody, validateSearchParam } from "./middleware"
 async function postPerson(req) {
   const body = await req.json()
 
-  const result = await validateBody(body)
+  const result = validateBody(body)
   if (result) return result
 
-  const id = await sql`
-     INSERT INTO people(id, nickname, name, birth_date, stack)
-     VALUES (${crypto.randomUUID()}, ${body.apelido}, ${body.nome}, ${body.nascimento}, ${body.stack});
+  const person = await sql`
+     INSERT INTO people(id, apelido, nome, nascimento, stack)
+     VALUES (${crypto.randomUUID()}, ${body.apelido}, ${body.nome}, ${body.nascimento}, ${body.stack})
      returning id
     `
 
   return new Response(null, {
     status: 201,
     headers: {
-      Location: req.url + '/' + id
+      Location: req.url + '/' + person[0].id
     }
   })
 }
@@ -25,7 +25,7 @@ async function getPersonById(url) {
   const id = url.href.replace(url.origin + '/pessoas/', '');
 
   const person = await sql`
-      SELECT (id, nickname, name, birth_date, stack) FROM people
+      SELECT * FROM people
       WHERE id = ${id};
     `
 
