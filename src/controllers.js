@@ -33,12 +33,12 @@ async function getPersonById(url) {
 }
 
 async function getPersonByQuery(url) {
-  let searchTerm = url.href.replace(url.origin + '/pessoas', '');
+  let searchTerm = url.href.replace(url.origin + '/pessoas', '')
 
   const result = validateSearchParam(searchTerm)
   if (result) return result
 
-  searchTerm = searchTerm.replace('?t=', '');
+  searchTerm = searchTerm.replace('?t=', '')
 
   const people = await sql`
     SELECT (id, nickname, name, birth_date, stack) FROM people
@@ -50,10 +50,10 @@ async function getPersonByQuery(url) {
 }
 
 async function personCount() {
-
   const count = await sql`
     SELECT COUNT(id) FROM people;
   `
+
   return new Response(count[0].count)
 }
 
