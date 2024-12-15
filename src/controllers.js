@@ -1,7 +1,7 @@
 import sql from "./db"
 import { validateBody, validateSearchParam } from "./middleware"
 
-async function postPerson(req) {
+async function createPerson(req) {
   const body = await req.json()
 
   const result = await validateBody(body)
@@ -62,5 +62,5 @@ async function personCount() {
 export {
   getPersonById,
   getPersonByQuery,
-  personCount, postPerson
+  personCount, createPerson
 }
