@@ -8,4 +8,5 @@ CREATE TABLE IF NOT EXISTS pessoas (
 );
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX nickname_idx ON pessoas USING GIN(apelido gin_trgm_ops);
 CREATE INDEX query_search_idx ON pessoas USING GIN(apelido_nome_stack gin_trgm_ops);
