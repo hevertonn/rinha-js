@@ -7,30 +7,31 @@ async function postPerson(req) {
   const result = await validateBody(body)
   if (result) return result
 
-  const person = await sql`
+  const uuid = crypto.randomUUID()
+
+  await sql`
      INSERT INTO pessoas(id, apelido, nome, nascimento, stack)
-     VALUES (${crypto.randomUUID()}, ${body.apelido}, ${body.nome}, ${body.nascimento}, ${body.stack})
-     returning id
+     VALUES (${uuid}, ${body.apelido}, ${body.nome}, ${body.nascimento}, ${body.stack})
     `
 
   return new Response(null, {
     status: 201,
     headers: {
-      Location: req.url + '/' + person[0].id
+      Location: req.url + '/' + uuid
     }
   })
 }
 
 async function getPersonById(url) {
-  const id = url.href.replace(url.origin + '/pessoas/', '');
+  const id = url.pathname.replace('/pessoas/', '');
 
   const person = await sql`
-      SELECT id, apelido, nome, nascimento, stack FROM pessoas
-      WHERE id = ${id};
-    `
-  if (!person[0]) return new Response(null, { status: 404 })
+       SELECT id, apelido, nome, nascimento, stack FROM pessoas
+       WHERE id = ${id};
+     `
+  if (person[0]) return Response.json(person[0])
 
-  return Response.json(person[0])
+  return new Response(null, { status: 404 })
 }
 
 async function getPersonByQuery(url) {

@@ -6,7 +6,7 @@ const server = Bun.serve({
 
     if (url.pathname == '/pessoas' && req.method == 'POST') return await postPerson(req)
     if (url.pathname.startsWith('/pessoas/') == true) return await getPersonById(url)
-    if (url.href.includes('/pessoas?') == true) return await getPersonByQuery(url)
+    if (url.pathname == '/pessoas' && req.method == 'GET') return await getPersonByQuery(url)
     if (url.pathname == '/contagem-pessoas') return await personCount()
   }
 })
