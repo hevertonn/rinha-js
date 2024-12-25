@@ -1,15 +1,14 @@
-# rinha-js
+# Rinha Backend
+A backend challenge running on **Bun.js** without any web framework.
+- Database: Postgresql
+- Max inserts: 32k 
 
-To install dependencies:
+### Repository with tests:
+[rinha-de-backend-2023-q3](https://github.com/zanfranceschi/rinha-de-backend-2023-q3)
 
+### How to run this project:
 ```bash
-bun install
+git clone https://github.com/hevertonn/rinha-js.git
+cd rinha-js
+docker compose up -d
 ```
-
-To run:
-
-```bash
-bun run index.js
-```
-
-This project was created using `bun init` in bun v1.1.38. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
