@@ -7,17 +7,16 @@ async function createPerson(req) {
   const result = await validateBody(body)
   if (result) return result
 
-  const uuid = crypto.randomUUID()
-
-  await sql`
+  const [person] = await sql`
      INSERT INTO pessoas(id, apelido, nome, nascimento, stack)
-     VALUES (${uuid}, ${body.apelido}, ${body.nome}, ${body.nascimento}, ${body.stack})
+     VALUES (${crypto.randomUUID()}, ${body.apelido}, ${body.nome}, ${body.nascimento}, ${body.stack})
+     returning id
     `
 
   return new Response(null, {
     status: 201,
     headers: {
-      Location: req.url + '/' + uuid
+      Location: req.url + '/' + person.id
     }
   })
 }
@@ -25,12 +24,12 @@ async function createPerson(req) {
 async function getPersonById(url) {
   const id = url.pathname.replace('/pessoas/', '');
 
-  const person = await sql`
+  const [person] = await sql`
        SELECT id, apelido, nome, nascimento, stack FROM pessoas
        WHERE id = ${id};
      `
-  if (person[0]) return Response.json(person[0])
 
+  if (person) return Response.json(person)
   return new Response(null, { status: 404 })
 }
 
@@ -43,20 +42,20 @@ async function getPersonByQuery(url) {
   searchTerm = searchTerm.replace('t=', '').toLowerCase()
 
   const people = await sql`
-    SELECT id, apelido, nome, nascimento, stack FROM pessoas
-    WHERE apelido_nome_stack LIKE ${'%' + searchTerm + '%'}
-    LIMIT 50;
-  `
+     SELECT id, apelido, nome, nascimento, stack FROM pessoas
+     WHERE apelido_nome_stack LIKE ${'%' + searchTerm + '%'}
+     LIMIT 50;
+   `
 
   return Response.json(people)
 }
 
 async function personCount() {
-  const count = await sql`
-    SELECT COUNT(id) FROM pessoas;
+  const [result] = await sql`
+    SELECT COUNT(1) FROM pessoas;
   `
 
-  return new Response(count[0].count)
+  return new Response(result.count)
 }
 
 export {

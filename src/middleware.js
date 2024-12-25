@@ -1,7 +1,7 @@
 import sql from "./db"
 
 async function validateUniqueNickname(nickname) {
-  const hasNickname = await sql`
+  const [hasNickname] = await sql`
     SELECT EXISTS (
       SELECT 1
       FROM pessoas
@@ -9,7 +9,7 @@ async function validateUniqueNickname(nickname) {
     )
   `
 
-  return hasNickname[0].exists
+  return hasNickname.exists
 }
 
 function validateStack(stack) {
