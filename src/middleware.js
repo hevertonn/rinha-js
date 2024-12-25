@@ -1,11 +1,15 @@
 import sql from "./db"
 
-async function fetchNickname(nickname) {
+async function validateUniqueNickname(nickname) {
   const hasNickname = await sql`
-    SELECT apelido FROM pessoas
-    WHERE apelido = ${nickname}
+    SELECT EXISTS (
+      SELECT 1
+      FROM pessoas
+      WHERE apelido = ${nickname}
+    )
   `
-  return hasNickname[0]
+
+  return hasNickname[0].exists
 }
 
 function validateStack(stack) {
@@ -16,17 +20,27 @@ function validateStack(stack) {
   } else return stack != null
 }
 
+function validateBirthDate(birthDate) {
+  if (birthDate.length == 10) {
+    const splitedDate = birthDate.split('-')
+
+    const [year, month, day] = splitedDate
+
+    if (year > 1900 && year < 2021 && month > 0 &&
+      month <= 12 && day > 0 && day <= 31)
+      return false
+  }
+  return true
+}
+
 async function validateBody(body) {
   if (!body.apelido || !body.nome || body.apelido.length > 32 ||
-    body.nome.length > 100 || Number.isNaN(Date.parse(body.nascimento)) ||
-    body.nascimento.length != 10)
+    body.nome.length > 100 || validateBirthDate(body.nascimento) ||
+    await validateUniqueNickname(body.apelido))
     return new Response(null, { status: 422 })
 
-  if (typeof (body.apelido) != 'string' || typeof (body.nome) != 'string' ||
-    typeof (body.nascimento) != 'string' || validateStack(body.stack))
+  if (typeof (body.nome) != 'string' || validateStack(body.stack))
     return new Response(null, { status: 400 })
-
-  if (await fetchNickname(body.apelido)) return new Response(null, { status: 422 })
 }
 
 function validateSearchParam(searchParam) {
